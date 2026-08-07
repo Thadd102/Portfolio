@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom'; // or standard <a> if not using react-router
 
 const skillsData = [
@@ -74,138 +74,106 @@ const educationList = [
 ];
 
 export default function Resume() {
-  const [isDarkMode, setIsDarkMode] = useState(true);
-
   return (
-    <div className={`${isDarkMode ? 'dark' : ''}`}>
-      <div className={styles.pageWrapper}>
-        <div className={styles.container}>
-          
-          {/* Top Bar: Back Link & Theme Toggle */}
-          <div className="flex items-center justify-between w-full">
-            <Link to="/" className={styles.backLink}>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-              </svg>
-              Back to Home
-            </Link>
+    <div className={styles.pageWrapper}>
+      <div className={styles.container}>
+        
+        {/* Back Link */}
+        <Link to="/" className={styles.backLink}>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+          Back to Home
+        </Link>
 
-            {/* Light / Dark Mode Toggle Button */}
-            <button
-              onClick={() => setIsDarkMode(!isDarkMode)}
-              className={styles.themeToggleBtn}
-              aria-label="Toggle theme"
-            >
-              {isDarkMode ? (
-                <>
-                  {/* Sun Icon */}
-                  <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
-                  <span>Light Mode</span>
-                </>
-              ) : (
-                <>
-                  {/* Moon Icon */}
-                  <svg className="w-4 h-4 text-slate-700" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-                  </svg>
-                  <span>Dark Mode</span>
-                </>
-              )}
-            </button>
+        {/* Page Header */}
+        <header className={styles.header}>
+          <h1 className={styles.title}>My Resume</h1>
+          <p className={styles.subtitle}>
+            A summary of my skills, experience, and education. Download the full PDF for more details.
+          </p>
+
+          <button className={styles.downloadBtn} disabled>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Resume Not Available
+          </button>
+        </header>
+
+        {/* Skills Cards Grid */}
+        <div className={styles.skillsGrid}>
+          {skillsData.map((skill, index) => (
+            <div key={index} className={styles.skillCard}>
+              <div className={`${styles.iconContainer} ${skill.iconBg}`}>
+                {skill.icon}
+              </div>
+              <h3 className={styles.skillTitle}>{skill.title}</h3>
+              <p className={styles.skillDesc}>{skill.desc}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Experience Section */}
+        <section className={styles.sectionCard}>
+          <div className={styles.sectionHeader}>
+            <div className={styles.sectionIconBg}>
+              <svg className="w-5 h-5 text-sky-600 dark:text-sky-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h2 className={styles.sectionTitle}>Experience</h2>
           </div>
 
-          {/* Page Header */}
-          <header className={styles.header}>
-            <h1 className={styles.title}>My Resume</h1>
-            <p className={styles.subtitle}>
-              A summary of my skills, experience, and education. Download the full PDF for more details.
-            </p>
-
-            <button className={styles.downloadBtn} disabled>
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-              Resume Not Available
-            </button>
-          </header>
-
-          {/* Skills Cards Grid */}
-          <div className={styles.skillsGrid}>
-            {skillsData.map((skill, index) => (
-              <div key={index} className={styles.skillCard}>
-                <div className={`${styles.iconContainer} ${skill.iconBg}`}>
-                  {skill.icon}
-                </div>
-                <h3 className={styles.skillTitle}>{skill.title}</h3>
-                <p className={styles.skillDesc}>{skill.desc}</p>
+          <div className={styles.timelineList}>
+            {experienceList.map((exp, index) => (
+              <div key={index} className={styles.timelineItem}>
+                <div className={styles.timelineDot} />
+                <h3 className={styles.itemTitle}>{exp.title}</h3>
+                <span className={styles.itemSubtitle}>{exp.company} • {exp.period}</span>
+                <p className={styles.itemDesc}>{exp.desc}</p>
               </div>
             ))}
           </div>
+        </section>
 
-          {/* Experience Section */}
-          <section className={styles.sectionCard}>
-            <div className={styles.sectionHeader}>
-              <div className={styles.sectionIconBg}>
-                <svg className="w-5 h-5 text-sky-600 dark:text-sky-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
+        {/* Education Section */}
+        <section className={styles.sectionCard}>
+          <div className={styles.sectionHeader}>
+            <div className={styles.sectionIconBg}>
+              <svg className="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+              </svg>
+            </div>
+            <h2 className={styles.sectionTitle}>Education</h2>
+          </div>
+
+          <div className={styles.timelineList}>
+            {educationList.map((edu, index) => (
+              <div key={index} className={styles.timelineItem}>
+                <div className={styles.timelineDotPurple} />
+                <h3 className={styles.itemTitle}>{edu.degree}</h3>
+                <span className={styles.itemSubtitle}>{edu.institution} • {edu.period}</span>
               </div>
-              <h2 className={styles.sectionTitle}>Experience</h2>
-            </div>
+            ))}
+          </div>
+        </section>
 
-            <div className={styles.timelineList}>
-              {experienceList.map((exp, index) => (
-                <div key={index} className={styles.timelineItem}>
-                  <div className={styles.timelineDot} />
-                  <h3 className={styles.itemTitle}>{exp.title}</h3>
-                  <span className={styles.itemSubtitle}>{exp.company} • {exp.period}</span>
-                  <p className={styles.itemDesc}>{exp.desc}</p>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* Education Section */}
-          <section className={styles.sectionCard}>
-            <div className={styles.sectionHeader}>
-              <div className={styles.sectionIconBg}>
-                <svg className="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-                </svg>
-              </div>
-              <h2 className={styles.sectionTitle}>Education</h2>
-            </div>
-
-            <div className={styles.timelineList}>
-              {educationList.map((edu, index) => (
-                <div key={index} className={styles.timelineItem}>
-                  <div className={styles.timelineDotPurple} />
-                  <h3 className={styles.itemTitle}>{edu.degree}</h3>
-                  <span className={styles.itemSubtitle}>{edu.institution} • {edu.period}</span>
-                </div>
-              ))}
-            </div>
-          </section>
-
-        </div>
       </div>
     </div>
   );
 }
 
 // ==========================================
-// STYLES OBJECT (Dual Theme Supported)
+// STYLES OBJECT (Dual Theme Support)
 // ==========================================
 const styles = {
   pageWrapper: "min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-white py-12 px-6 md:px-16 transition-colors duration-300",
   container: "max-w-5xl mx-auto flex flex-col gap-10",
 
-  // Navigation & Actions
+  // Back Button
   backLink: "inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors w-fit",
-  themeToggleBtn: "inline-flex items-center gap-2 px-3.5 py-1.5 text-xs font-semibold rounded-full bg-slate-200/80 hover:bg-slate-300/80 text-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border border-slate-300/80 dark:border-slate-700 transition-colors cursor-pointer",
 
   // Header
   header: "flex flex-col items-start gap-4",
