@@ -1,205 +1,164 @@
 import React from 'react';
-import { Link } from 'react-router-dom'; // or standard <a> if not using react-router
-
-const skillsData = [
-  {
-    title: 'Frontend Development',
-    desc: 'React, Next.js, TypeScript, Tailwind CSS',
-    icon: (
-      <svg className="w-5 h-5 text-sky-600 dark:text-sky-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-      </svg>
-    ),
-    iconBg: 'bg-sky-500/10 dark:bg-sky-500/20',
-  },
-  {
-    title: 'Backend Development',
-    desc: 'Node.js, Python, PostgreSQL, REST APIs',
-    icon: (
-      <svg className="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4" />
-      </svg>
-    ),
-    iconBg: 'bg-emerald-500/10 dark:bg-emerald-500/20',
-  },
-  {
-    title: 'Full Stack Applications',
-    desc: 'MERN Stack, Supabase, Cloud Deployment',
-    icon: (
-      <svg className="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9" />
-      </svg>
-    ),
-    iconBg: 'bg-purple-500/10 dark:bg-purple-500/20',
-  },
-  {
-    title: 'Software Architecture',
-    desc: 'Scalable systems, clean code, CI/CD',
-    icon: (
-      <svg className="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-      </svg>
-    ),
-    iconBg: 'bg-amber-500/10 dark:bg-amber-500/20',
-  },
-];
-
-const experienceList = [
-  {
-    title: 'Lead Web Developer',
-    company: 'Tech Company',
-    period: '2023 - Present',
-    desc: 'Leading frontend development, architecture decisions, and mentoring junior developers.',
-  },
-  {
-    title: 'Full Stack Developer',
-    company: 'Software Agency',
-    period: '2022 - 2023',
-    desc: 'Built scalable web applications using React, Node.js, and PostgreSQL.',
-  },
-  {
-    title: 'Backend Developer',
-    company: 'Startup',
-    period: '2021 - 2022',
-    desc: 'Designed and implemented REST APIs, database schemas, and server infrastructure.',
-  },
-];
-
-const educationList = [
-  {
-    degree: 'Bachelor of Science in Computer Science',
-    institution: 'University',
-    period: '2020 - 2024',
-  },
-];
+import { Link } from 'react-router-dom';
+import { usePortfolio } from '../context/PortfolioContext';
+import DynamicIcon from '../components/DynamicIcon';
+import { ArrowLeft, Printer, Mail, Phone, MapPin, Globe, Download, Award, Briefcase, GraduationCap } from 'lucide-react';
 
 export default function Resume() {
+  const { portfolio } = usePortfolio();
+
+  const profile = portfolio?.profile || {
+    name: 'THADD 101',
+    title: 'Graphic Designer • Web & App Developer',
+    email: 'thadd101.dev@gmail.com',
+    phone: '+1 (234) 567-8900',
+    location: 'Remote / Worldwide',
+    bio1: 'Multi-disciplinary digital creator with deep expertise across modern graphic design, full-stack web development, and mobile application engineering.'
+  };
+
+  const experience = portfolio?.experience || [
+    { title: 'Lead Web & App Developer', company: 'Tech Innovations Global', period: '2023 - Present', description: 'Spearheading multi-platform product development across web and mobile.' },
+    { title: 'Senior Full Stack Developer', company: 'Digital Core Agency', period: '2022 - 2023', description: 'Engineered scalable client applications using React, Node.js, and PostgreSQL.' },
+    { title: 'Graphic Designer & Frontend Developer', company: 'Pixel Craft Studio', period: '2020 - 2022', description: 'Delivered cohesive brand identities and modern UI/UX design mockups in Figma.' },
+  ];
+
+  const education = portfolio?.education || [
+    { degree: 'Bachelor of Science in Computer Science', institution: 'State University of Technology', period: '2020 - 2024', description: 'Specialized in Software Engineering and Distributed Systems.' },
+    { degree: 'Professional Certificate in UI/UX & Digital Design', institution: 'Interaction Design Institute', period: '2021', description: 'User experience research, design systems, and rapid prototyping.' }
+  ];
+
+  const skills = portfolio?.skills || [];
+
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
-    <div className={styles.pageWrapper}>
-      <div className={styles.container}>
+    <div className="min-h-screen bg-slate-50 dark:bg-[#070b14] text-slate-900 dark:text-white py-12 px-6 md:px-16 transition-colors duration-300 print:bg-white print:text-black print:p-0">
+      <div className="max-w-4xl mx-auto flex flex-col gap-10">
         
-        {/* Back Link */}
-        <Link to="/" className={styles.backLink}>
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-          </svg>
-          Back to Home
-        </Link>
+        {/* Top Navigation & Print controls (Hidden when printing) */}
+        <div className="flex items-center justify-between print:hidden">
+          <Link 
+            to="/" 
+            className="inline-flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-sky-500 dark:text-slate-400 dark:hover:text-[#38bdf8] transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Back to Portfolio</span>
+          </Link>
 
-        {/* Page Header */}
-        <header className={styles.header}>
-          <h1 className={styles.title}>My Resume</h1>
-          <p className={styles.subtitle}>
-            A summary of my skills, experience, and education. Download the full PDF for more details.
-          </p>
-
-          <button className={styles.downloadBtn} disabled>
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-            </svg>
-            Resume Not Available
+          <button
+            onClick={handlePrint}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-600 text-white font-bold text-sm shadow-md transition-all hover:scale-105 cursor-pointer"
+          >
+            <Printer className="w-4 h-4" />
+            <span>Print / Save PDF</span>
           </button>
-        </header>
-
-        {/* Skills Cards Grid */}
-        <div className={styles.skillsGrid}>
-          {skillsData.map((skill, index) => (
-            <div key={index} className={styles.skillCard}>
-              <div className={`${styles.iconContainer} ${skill.iconBg}`}>
-                {skill.icon}
-              </div>
-              <h3 className={styles.skillTitle}>{skill.title}</h3>
-              <p className={styles.skillDesc}>{skill.desc}</p>
-            </div>
-          ))}
         </div>
 
-        {/* Experience Section */}
-        <section className={styles.sectionCard}>
-          <div className={styles.sectionHeader}>
-            <div className={styles.sectionIconBg}>
-              <svg className="w-5 h-5 text-sky-600 dark:text-sky-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
+        {/* Main Printable Resume Paper */}
+        <div className="bg-white dark:bg-[#0c1222] p-8 sm:p-12 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-xl print:shadow-none print:border-none print:p-0 space-y-10">
+          
+          {/* Header */}
+          <div className="border-b border-slate-200 dark:border-slate-800 pb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+            <div>
+              <h1 className="text-3xl sm:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+                {profile.name}
+              </h1>
+              <p className="text-lg font-bold text-sky-600 dark:text-[#38bdf8] mt-1">
+                {profile.title}
+              </p>
+              <p className="text-sm text-slate-600 dark:text-slate-400 max-w-xl mt-3 leading-relaxed">
+                {profile.bio1}
+              </p>
             </div>
-            <h2 className={styles.sectionTitle}>Experience</h2>
-          </div>
 
-          <div className={styles.timelineList}>
-            {experienceList.map((exp, index) => (
-              <div key={index} className={styles.timelineItem}>
-                <div className={styles.timelineDot} />
-                <h3 className={styles.itemTitle}>{exp.title}</h3>
-                <span className={styles.itemSubtitle}>{exp.company} • {exp.period}</span>
-                <p className={styles.itemDesc}>{exp.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Education Section */}
-        <section className={styles.sectionCard}>
-          <div className={styles.sectionHeader}>
-            <div className={styles.sectionIconBg}>
-              <svg className="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l9-5-9-5-9 5 9 5z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
-              </svg>
+            <div className="flex flex-col gap-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 shrink-0">
+              <span className="flex items-center gap-2">
+                <Mail className="w-4 h-4 text-sky-500" />
+                {profile.email}
+              </span>
+              <span className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-emerald-500" />
+                {profile.phone}
+              </span>
+              <span className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-purple-500" />
+                {profile.location}
+              </span>
             </div>
-            <h2 className={styles.sectionTitle}>Education</h2>
           </div>
 
-          <div className={styles.timelineList}>
-            {educationList.map((edu, index) => (
-              <div key={index} className={styles.timelineItem}>
-                <div className={styles.timelineDotPurple} />
-                <h3 className={styles.itemTitle}>{edu.degree}</h3>
-                <span className={styles.itemSubtitle}>{edu.institution} • {edu.period}</span>
-              </div>
-            ))}
+          {/* Skills Breakdown */}
+          <div>
+            <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+              <Award className="w-5 h-5 text-sky-500" />
+              Core Competencies & Skills
+            </h2>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {skills.map((s, idx) => (
+                <div key={idx} className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/60 dark:border-slate-800 flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{s.name}</span>
+                  <span className="text-[11px] font-bold text-sky-500">{s.level}%</span>
+                </div>
+              ))}
+            </div>
           </div>
-        </section>
+
+          {/* Experience Section */}
+          <div>
+            <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-wider mb-6 flex items-center gap-2">
+              <Briefcase className="w-5 h-5 text-sky-500" />
+              Work Experience
+            </h2>
+
+            <div className="space-y-6 pl-2 border-l-2 border-slate-200 dark:border-slate-800">
+              {experience.map((exp, idx) => (
+                <div key={idx} className="relative pl-6">
+                  <div className="absolute -left-[31px] top-1.5 w-3 h-3 rounded-full bg-sky-500 ring-4 ring-white dark:ring-[#0c1222]" />
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">{exp.title}</h3>
+                    <span className="text-xs font-bold text-sky-600 dark:text-sky-400">{exp.period}</span>
+                  </div>
+                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 block mb-2">{exp.company}</span>
+                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                    {exp.description}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Education Section */}
+          <div>
+            <h2 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-wider mb-6 flex items-center gap-2">
+              <GraduationCap className="w-5 h-5 text-purple-500" />
+              Education & Certifications
+            </h2>
+
+            <div className="space-y-6 pl-2 border-l-2 border-slate-200 dark:border-slate-800">
+              {education.map((edu, idx) => (
+                <div key={idx} className="relative pl-6">
+                  <div className="absolute -left-[31px] top-1.5 w-3 h-3 rounded-full bg-purple-500 ring-4 ring-white dark:ring-[#0c1222]" />
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
+                    <h3 className="text-base font-bold text-slate-900 dark:text-white">{edu.degree}</h3>
+                    <span className="text-xs font-bold text-purple-600 dark:text-purple-400">{edu.period}</span>
+                  </div>
+                  <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 block">{edu.institution}</span>
+                  {edu.description && (
+                    <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                      {edu.description}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+
+        </div>
 
       </div>
     </div>
   );
 }
-
-// ==========================================
-// STYLES OBJECT (Dual Theme Support)
-// ==========================================
-const styles = {
-  pageWrapper: "min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-white py-12 px-6 md:px-16 transition-colors duration-300",
-  container: "max-w-5xl mx-auto flex flex-col gap-10",
-
-  // Back Button
-  backLink: "inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors w-fit",
-
-  // Header
-  header: "flex flex-col items-start gap-4",
-  title: "text-4xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white",
-  subtitle: "text-slate-600 dark:text-slate-400 text-base sm:text-lg max-w-2xl leading-relaxed",
-  downloadBtn: "inline-flex items-center gap-2 px-6 py-3 bg-slate-200/80 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 font-semibold rounded-full border border-slate-300 dark:border-slate-700/60 cursor-not-allowed opacity-90",
-
-  // Skills Grid
-  skillsGrid: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6",
-  skillCard: "flex flex-col p-6 rounded-2xl bg-white dark:bg-[#0c1222] border border-slate-200/80 dark:border-slate-800/80 shadow-sm dark:shadow-none hover:border-slate-300 dark:hover:border-slate-700 transition-all",
-  iconContainer: "w-10 h-10 rounded-xl flex items-center justify-center mb-4",
-  skillTitle: "text-base font-bold text-slate-900 dark:text-slate-100 mb-1",
-  skillDesc: "text-xs text-slate-600 dark:text-slate-400 leading-relaxed",
-
-  // Timeline Container Card
-  sectionCard: "p-8 rounded-2xl bg-white dark:bg-[#0c1222] border border-slate-200/80 dark:border-slate-800/80 shadow-sm dark:shadow-none flex flex-col gap-8",
-  sectionHeader: "flex items-center gap-3",
-  sectionIconBg: "w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center",
-  sectionTitle: "text-2xl font-bold text-slate-900 dark:text-white",
-
-  // Timeline Content
-  timelineList: "flex flex-col gap-8 pl-2 border-l border-slate-200 dark:border-slate-800 ml-4",
-  timelineItem: "relative pl-6 flex flex-col gap-1",
-  timelineDot: "absolute -left-[25px] top-1.5 w-3 h-3 rounded-full bg-sky-500 ring-4 ring-slate-50 dark:ring-slate-950",
-  timelineDotPurple: "absolute -left-[25px] top-1.5 w-3 h-3 rounded-full bg-purple-500 ring-4 ring-slate-50 dark:ring-slate-950",
-  itemTitle: "text-lg font-bold text-slate-900 dark:text-slate-100",
-  itemSubtitle: "text-sm text-sky-600 dark:text-sky-400 font-medium mb-1",
-  itemDesc: "text-sm text-slate-600 dark:text-slate-400 leading-relaxed max-w-2xl",
-};

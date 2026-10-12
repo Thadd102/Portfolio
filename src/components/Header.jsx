@@ -1,78 +1,109 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { usePortfolio } from '../context/PortfolioContext';
+import { Sun, Moon, Menu, X, FileText } from 'lucide-react';
 
 export default function Header() {
-  const [isDark, setIsDark] = useState(true);
+  const { portfolio, theme, toggleTheme } = usePortfolio();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+  // Secret phone gestures
+  const [tapCount, setTapCount] = useState(0);
+  const tapTimerRef = useRef(null);
+  const longPressTimerRef = useRef(null);
+
+  const handleSecretTap = () => {
+    const nextCount = tapCount + 1;
+    if (nextCount >= 3) {
+      setTapCount(0);
+      if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
+      navigate('/admin');
+      return;
     }
-  }, [isDark]);
+    setTapCount(nextCount);
+    if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
+    tapTimerRef.current = setTimeout(() => {
+      setTapCount(0);
+    }, 1000);
+  };
+
+  const handleTouchStart = () => {
+    longPressTimerRef.current = setTimeout(() => {
+      navigate('/admin');
+    }, 1800);
+  };
+
+  const handleTouchEnd = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+    }
+  };
+
+  const profile = portfolio?.profile || { name: 'THADD 101' };
 
   return (
-    <header className={styles.header}>
-      <div className={styles.container}>
+    <header className="fixed top-0 left-0 w-full z-50 bg-white/80 dark:bg-[#080d19]/85 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/60 transition-colors duration-300">
+      <div className="max-w-7xl mx-auto px-5 sm:px-6 md:px-12 py-3.5 flex items-center justify-between">
         
-        {/* Brand Logo */}
-        <a href="#" className={styles.logo}>
-          it's <span className={styles.logoHighlight}>me</span>
-        </a>
+        {/* Brand Logo with Invisible Secret Mobile Gestures (3 taps or 2s press-and-hold) */}
+        <div 
+          onClick={handleSecretTap}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchEnd}
+          className="flex items-center gap-2 group cursor-pointer select-none"
+        >
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white font-black text-lg shadow-md shadow-sky-500/20 group-hover:scale-105 transition-transform">
+            T
+          </div>
+          <span className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white group-hover:opacity-90 transition-opacity">
+            {profile.name}
+          </span>
+        </div>
 
         {/* Desktop Nav */}
-        <nav className={styles.desktopNav}>
-          <a href="#about" className={styles.navLink}>About</a>
-          <a href="#services" className={styles.navLink}>Services</a>
-          <a href="#experience" className={styles.navLink}>Experience</a>
-          <a href="#projects" className={styles.navLink}>Projects</a>
-          <a href="#contact" className={styles.navLink}>Contact</a>
+        <nav className="hidden lg:flex items-center gap-1 text-sm font-semibold text-slate-600 dark:text-slate-300">
+          <a href="#about" className="px-3.5 py-2 rounded-lg hover:text-sky-500 dark:hover:text-[#38bdf8] hover:bg-sky-50 dark:hover:bg-slate-800/60 transition-all">About</a>
+          <a href="#services" className="px-3.5 py-2 rounded-lg hover:text-sky-500 dark:hover:text-[#38bdf8] hover:bg-sky-50 dark:hover:bg-slate-800/60 transition-all">Services</a>
+          <a href="#skills" className="px-3.5 py-2 rounded-lg hover:text-sky-500 dark:hover:text-[#38bdf8] hover:bg-sky-50 dark:hover:bg-slate-800/60 transition-all">Skills</a>
+          <a href="#projects" className="px-3.5 py-2 rounded-lg hover:text-sky-500 dark:hover:text-[#38bdf8] hover:bg-sky-50 dark:hover:bg-slate-800/60 transition-all">Projects</a>
+          <a href="#experience" className="px-3.5 py-2 rounded-lg hover:text-sky-500 dark:hover:text-[#38bdf8] hover:bg-sky-50 dark:hover:bg-slate-800/60 transition-all">Experience</a>
+          <a href="#contact" className="px-3.5 py-2 rounded-lg hover:text-sky-500 dark:hover:text-[#38bdf8] hover:bg-sky-50 dark:hover:bg-slate-800/60 transition-all">Contact</a>
         </nav>
 
         {/* Action Controls */}
-        <div className={styles.actions}>
+        <div className="flex items-center gap-2 sm:gap-3">
           
           {/* Theme Toggle Button */}
           <button 
-            onClick={() => setIsDark(!isDark)} 
-            className={styles.themeToggle} 
+            onClick={toggleTheme} 
+            className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800/70 transition-all duration-200 cursor-pointer flex items-center justify-center text-slate-700 dark:text-slate-200 hover:scale-105 active:scale-95" 
             aria-label="Toggle Theme"
           >
-            {isDark ? (
-              /* Moon Icon */
-              <svg className="w-5 h-5 text-[#38bdf8] transition-transform duration-300 group-hover:-rotate-12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-              </svg>
+            {theme === 'dark' ? (
+              <Moon className="w-4 h-4 text-[#38bdf8]" />
             ) : (
-              /* Sun Icon */
-              <svg className="w-5 h-5 text-amber-500 transition-transform duration-300 group-hover:rotate-90" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
+              <Sun className="w-4 h-4 text-amber-500" />
             )}
           </button>
 
-          {/* Desktop Resume Button (Navigates to /resume route) */}
-          <Link to="/resume" className={styles.desktopResumeBtn}>
+          {/* Desktop Resume Button */}
+          <Link 
+            to="/resume" 
+            className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-slate-300 dark:border-slate-700 hover:border-slate-400 text-xs sm:text-sm font-bold text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
+          >
+            <FileText className="w-3.5 h-3.5" />
             Resume
           </Link>
 
           {/* Mobile Hamburger Toggle */}
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)} 
-            className={styles.hamburgerBtn}
+            className="lg:hidden p-2 rounded-xl text-slate-800 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-all"
             aria-label="Toggle Navigation Menu"
           >
-            {isMenuOpen ? (
-              <svg className="w-6 h-6 transition-transform duration-200 rotate-90" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            ) : (
-              <svg className="w-6 h-6 transition-transform duration-200" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-              </svg>
-            )}
+            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
 
@@ -80,50 +111,20 @@ export default function Header() {
 
       {/* Mobile Menu Drawer */}
       {isMenuOpen && (
-        <div className={styles.mobileMenuDrawer}>
-          <a href="#about" onClick={() => setIsMenuOpen(false)} className={styles.mobileNavLink}>About</a>
-          <a href="#services" onClick={() => setIsMenuOpen(false)} className={styles.mobileNavLink}>Services</a>
-          <a href="#experience" onClick={() => setIsMenuOpen(false)} className={styles.mobileNavLink}>Experience</a>
-          <a href="#projects" onClick={() => setIsMenuOpen(false)} className={styles.mobileNavLink}>Projects</a>
-          <a href="#contact" onClick={() => setIsMenuOpen(false)} className={styles.mobileNavLink}>Contact</a>
-          <Link to="/resume" onClick={() => setIsMenuOpen(false)} className={styles.mobileResumeBtn}>
-            Resume
-          </Link>
+        <div className="lg:hidden flex flex-col gap-1 px-6 pt-3 pb-6 bg-white/95 border-b border-slate-200 dark:bg-[#080d19]/95 dark:border-slate-800 backdrop-blur-md animate-in slide-in-from-top-4 duration-200">
+          <a href="#about" onClick={() => setIsMenuOpen(false)} className="px-4 py-2.5 rounded-xl text-base font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">About</a>
+          <a href="#services" onClick={() => setIsMenuOpen(false)} className="px-4 py-2.5 rounded-xl text-base font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Services</a>
+          <a href="#skills" onClick={() => setIsMenuOpen(false)} className="px-4 py-2.5 rounded-xl text-base font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Skills</a>
+          <a href="#projects" onClick={() => setIsMenuOpen(false)} className="px-4 py-2.5 rounded-xl text-base font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Projects</a>
+          <a href="#experience" onClick={() => setIsMenuOpen(false)} className="px-4 py-2.5 rounded-xl text-base font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Experience</a>
+          <a href="#contact" onClick={() => setIsMenuOpen(false)} className="px-4 py-2.5 rounded-xl text-base font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800">Contact</a>
+          <div className="pt-2 flex items-center">
+            <Link to="/resume" onClick={() => setIsMenuOpen(false)} className="w-full text-center py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 text-sm font-bold text-slate-800 dark:text-white">
+              Resume
+            </Link>
+          </div>
         </div>
       )}
     </header>
   );
 }
-
-// ==========================================
-// STYLES OBJECT (React Native Style Pattern)
-// ==========================================
-const styles = {
-  header: "fixed top-0 left-0 w-full z-50 bg-white/90 border-b border-slate-200/80 text-slate-900 dark:bg-[#090e1a]/95 dark:border-slate-800/50 dark:text-white backdrop-blur-md transition-colors duration-300",
-  container: "max-w-7xl mx-auto px-5 sm:px-6 md:px-12 py-3.5 flex items-center justify-between",
-  
-  // Logo: Subtle zoom and brightness transition
-  logo: "text-2xl font-black tracking-tight text-slate-900 dark:text-white hover:scale-105 active:scale-95 transition-transform duration-200 inline-block",
-  logoHighlight: "text-sky-500 dark:text-[#38bdf8]",
-  
-  // Desktop Nav: Soft background pill highlight + accent text color shift
-  desktopNav: "hidden md:flex items-center gap-1.5 text-sm font-semibold text-slate-600 dark:text-slate-300",
-  navLink: "px-3.5 py-2 rounded-lg hover:text-sky-500 dark:hover:text-[#38bdf8] hover:bg-sky-50 dark:hover:bg-slate-800/60 transition-all duration-200 active:scale-95",
-  
-  // Actions
-  actions: "flex items-center gap-2 sm:gap-4",
-  
-  // Theme Toggle Button: Rounded highlight box, scale pop, and icon rotation effect
-  themeToggle: "group p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/70 hover:scale-110 active:scale-90 transition-all duration-200 cursor-pointer flex items-center justify-center",
-  
-  // Resume Button: Slight lift (-translate-y-0.5), shadow glow, and crisp fill state
-  desktopResumeBtn: "hidden md:inline-flex px-5 py-2 rounded-xl border-2 border-slate-900 dark:border-white/80 text-sm font-bold text-slate-900 dark:text-white hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-[#090e1a] hover:shadow-lg hover:shadow-sky-500/10 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200",
-  
-  // Hamburger Toggle Button: Rounded hover container with quick press feedback
-  hamburgerBtn: "md:hidden p-2 rounded-xl text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-slate-800/70 hover:text-sky-500 dark:hover:text-[#38bdf8] active:scale-90 transition-all duration-200 focus:outline-none",
-
-  // Mobile Menu Drawer: Large touch targets with smooth background fill
-  mobileMenuDrawer: "md:hidden flex flex-col gap-2 px-6 pt-3 pb-6 bg-white/95 border-b border-slate-200 dark:bg-[#090e1a]/95 dark:border-slate-800/80 backdrop-blur-md transition-all",
-  mobileNavLink: "px-4 py-2.5 rounded-xl text-base font-semibold text-slate-700 dark:text-slate-300 hover:text-sky-500 dark:hover:text-[#38bdf8] hover:bg-sky-50 dark:hover:bg-slate-800/60 active:scale-98 transition-all duration-200",
-  mobileResumeBtn: "inline-block text-center mt-2 px-5 py-2.5 rounded-xl border-2 border-slate-900 dark:border-white/80 text-sm font-bold text-slate-900 dark:text-white hover:bg-slate-900 hover:text-white dark:hover:bg-white dark:hover:text-[#090e1a] active:scale-95 transition-all duration-200",
-};
