@@ -28,20 +28,9 @@ try {
   // Read-only filesystem in serverless environments (e.g. Vercel)
 }
 
-// Multer storage for project/avatar image uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, UPLOADS_DIR);
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname).toLowerCase();
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    cb(null, `upload-${uniqueSuffix}${ext}`);
-  }
-});
-
+// Multer storage: memory storage for serverless compatibility + disk fallback
 const upload = multer({
-  storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
   fileFilter: (req, file, cb) => {
     const allowed = /jpeg|jpg|png|webp|svg|gif|pdf/;
@@ -437,11 +426,32 @@ router.post('/admin/upload', authMiddleware, upload.single('file'), (req, res) =
   if (!req.file) {
     return res.status(400).json({ error: 'No file uploaded' });
   }
-  const publicUrl = `/uploads/${req.file.filename}`;
+
+  // Attempt to save to disk if uploads directory exists and is writable
+  try {
+    if (fs.existsSync(UPLOADS_DIR)) {
+      const ext = path.extname(req.file.originalname).toLowerCase();
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+      const filename = `upload-${uniqueSuffix}${ext}`;
+      const filePath = path.join(UPLOADS_DIR, filename);
+      fs.writeFileSync(filePath, req.file.buffer);
+      return res.json({
+        success: true,
+        url: `/uploads/${filename}`,
+        filename: filename,
+        size: req.file.size
+      });
+    }
+  } catch (err) {
+    // Read-only filesystem in serverless environments (e.g. Vercel)
+  }
+
+  // Fallback for serverless: return base64 Data URL (persisted directly in Neon PostgreSQL)
+  const base64Url = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
   res.json({
     success: true,
-    url: publicUrl,
-    filename: req.file.filename,
+    url: base64Url,
+    filename: req.file.originalname,
     size: req.file.size
   });
 });
