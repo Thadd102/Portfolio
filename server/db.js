@@ -12,8 +12,12 @@ const DATA_DIR = path.join(__dirname, 'data');
 const DB_FILE = path.join(DATA_DIR, 'portfolio.json');
 
 // Ensure local data directory exists for fallback cache
-if (!fs.existsSync(DATA_DIR)) {
-  fs.mkdirSync(DATA_DIR, { recursive: true });
+try {
+  if (!fs.existsSync(DATA_DIR)) {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+  }
+} catch (e) {
+  // Read-only filesystem in serverless environments (e.g. Vercel)
 }
 
 // PostgreSQL Connection Pool (Neon DB)
@@ -351,12 +355,12 @@ function saveLocalDbFile(data) {
     fs.renameSync(tempFile, DB_FILE);
     return true;
   } catch (err) {
-    console.error("Error writing database to file:", err);
     try {
       fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
       return true;
     } catch (e) {
-      console.error("Fatal local database write error:", e);
+      // In serverless environments (like Vercel), the filesystem is read-only.
+      // Neon PostgreSQL is the primary database, so file write errors are safely ignored.
       return false;
     }
   }
