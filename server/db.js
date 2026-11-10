@@ -21,11 +21,23 @@ try {
 }
 
 // PostgreSQL Connection Pool (Neon DB)
-const databaseUrl = process.env.DATABASE_URL;
+const FALLBACK_DATABASE_URL = "postgresql://neondb_owner:npg_xhBUduZ6V7YJ@ep-solitary-credit-beswpfj7-pooler.c-9.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require";
 
-export const pool = databaseUrl
+export function getDatabaseUrl() {
+  return (
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL ||
+    process.env.POSTGRES_PRISMA_URL ||
+    process.env.POSTGRES_URL_NON_POOLING ||
+    FALLBACK_DATABASE_URL
+  );
+}
+
+const activeDbUrl = getDatabaseUrl();
+
+export let pool = activeDbUrl
   ? new Pool({
-      connectionString: databaseUrl,
+      connectionString: activeDbUrl,
       ssl: { rejectUnauthorized: false },
       max: 10,
       idleTimeoutMillis: 30000,
@@ -371,6 +383,19 @@ function saveLocalDbFile(data) {
 // ----------------------------------------------------
 
 export async function initDb() {
+  if (!pool) {
+    const url = getDatabaseUrl();
+    if (url) {
+      pool = new Pool({
+        connectionString: url,
+        ssl: { rejectUnauthorized: false },
+        max: 10,
+        idleTimeoutMillis: 30000,
+        connectionTimeoutMillis: 10000
+      });
+    }
+  }
+
   if (!pool) {
     console.warn("No DATABASE_URL configured. Using local JSON store.");
     cachedDb = readLocalDbFile();
