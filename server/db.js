@@ -1,17 +1,36 @@
+import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
+import pg from 'pg';
 
+const { Pool } = pg;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const DATA_DIR = path.join(__dirname, 'data');
 const DB_FILE = path.join(DATA_DIR, 'portfolio.json');
 
-// Ensure directory exists
+// Ensure local data directory exists for fallback cache
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
+
+// PostgreSQL Connection Pool (Neon DB)
+const databaseUrl = process.env.DATABASE_URL;
+
+export const pool = databaseUrl
+  ? new Pool({
+      connectionString: databaseUrl,
+      ssl: { rejectUnauthorized: false },
+      max: 10,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 10000
+    })
+  : null;
+
+let isPostgresConnected = false;
+let cachedDb = null;
 
 // Password hashing helpers
 export function hashPassword(password, salt = crypto.randomBytes(16).toString('hex')) {
@@ -27,7 +46,7 @@ export function verifyPassword(password, storedHash) {
 }
 
 // Generate default initial data
-function getDefaultData() {
+export function getDefaultData() {
   const defaultSalt = crypto.randomBytes(16).toString('hex');
   const initialPasswordHash = hashPassword('admin123', defaultSalt);
   const jwtSecret = crypto.randomBytes(32).toString('hex');
@@ -306,40 +325,378 @@ function getDefaultData() {
   };
 }
 
-// Read database
-export function readDb() {
+// Read database from local fallback JSON file
+function readLocalDbFile() {
   try {
     if (!fs.existsSync(DB_FILE)) {
       const initial = getDefaultData();
-      saveDb(initial);
+      saveLocalDbFile(initial);
       return initial;
     }
     const raw = fs.readFileSync(DB_FILE, 'utf-8');
-    const parsed = JSON.parse(raw);
-    return parsed;
+    return JSON.parse(raw);
   } catch (err) {
-    console.error("Error reading database, creating fresh seed:", err);
+    console.error("Error reading local database file, creating fresh seed:", err);
     const initial = getDefaultData();
-    saveDb(initial);
+    saveLocalDbFile(initial);
     return initial;
   }
 }
 
-// Save database with atomic write
-export function saveDb(data) {
+// Save database to local fallback JSON file
+function saveLocalDbFile(data) {
   try {
     const tempFile = `${DB_FILE}.${Date.now()}.tmp`;
     fs.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf-8');
     fs.renameSync(tempFile, DB_FILE);
     return true;
   } catch (err) {
-    console.error("Error writing database:", err);
+    console.error("Error writing database to file:", err);
     try {
       fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
       return true;
     } catch (e) {
-      console.error("Fatal database write error:", e);
+      console.error("Fatal local database write error:", e);
       return false;
     }
   }
+}
+
+// ----------------------------------------------------
+// NEON POSTGRESQL INITIALIZATION & SYNC
+// ----------------------------------------------------
+
+export async function initDb() {
+  if (!pool) {
+    console.warn("No DATABASE_URL configured. Using local JSON store.");
+    cachedDb = readLocalDbFile();
+    return cachedDb;
+  }
+
+  try {
+    // 1. Create tables in Neon DB if not exists
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS admins (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(255) UNIQUE NOT NULL,
+        password_hash TEXT NOT NULL,
+        token_secret TEXT NOT NULL,
+        last_login TIMESTAMP WITH TIME ZONE,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+
+      CREATE TABLE IF NOT EXISTS messages (
+        id VARCHAR(255) PRIMARY KEY,
+        name VARCHAR(255) NOT NULL,
+        email VARCHAR(255) NOT NULL,
+        subject TEXT,
+        service_category VARCHAR(255),
+        message TEXT NOT NULL,
+        read BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+
+      CREATE TABLE IF NOT EXISTS portfolio_data (
+        section VARCHAR(100) PRIMARY KEY,
+        data JSONB NOT NULL,
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+      );
+    `);
+
+    // 2. Fetch admin user
+    const adminRes = await pool.query('SELECT * FROM admins ORDER BY id LIMIT 1');
+    let auth = null;
+    if (adminRes.rows.length > 0) {
+      const row = adminRes.rows[0];
+      auth = {
+        username: row.username,
+        passwordHash: row.password_hash,
+        tokenSecret: row.token_secret,
+        lastLogin: row.last_login ? row.last_login.toISOString() : null
+      };
+    } else {
+      // Seed default or local admin into Neon
+      const local = readLocalDbFile();
+      const initialAuth = local.auth || getDefaultData().auth;
+      await pool.query(`
+        INSERT INTO admins (username, password_hash, token_secret, last_login)
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (username) DO NOTHING
+      `, [
+        initialAuth.username || 'admin',
+        initialAuth.passwordHash,
+        initialAuth.tokenSecret,
+        initialAuth.lastLogin ? new Date(initialAuth.lastLogin) : null
+      ]);
+      auth = initialAuth;
+    }
+
+    // 3. Fetch portfolio sections
+    const secRes = await pool.query('SELECT section, data FROM portfolio_data');
+    const sections = {};
+    for (const row of secRes.rows) {
+      sections[row.section] = row.data;
+    }
+
+    // If portfolio sections are empty, seed from local JSON
+    const requiredSections = ['profile', 'socials', 'services', 'skills', 'projects', 'experience', 'education', 'caseStudy', 'settings'];
+    const missingSections = requiredSections.filter(sec => !sections[sec]);
+
+    if (missingSections.length > 0) {
+      const local = readLocalDbFile();
+      const def = getDefaultData();
+      for (const sec of missingSections) {
+        const val = local[sec] !== undefined ? local[sec] : def[sec];
+        sections[sec] = val;
+        await pool.query(`
+          INSERT INTO portfolio_data (section, data, updated_at)
+          VALUES ($1, $2, NOW())
+          ON CONFLICT (section) DO UPDATE
+          SET data = EXCLUDED.data, updated_at = NOW()
+        `, [sec, JSON.stringify(val)]);
+      }
+    }
+
+    // 4. Fetch messages
+    const msgRes = await pool.query('SELECT * FROM messages ORDER BY created_at DESC');
+    const messages = msgRes.rows.map(m => ({
+      id: m.id,
+      name: m.name,
+      email: m.email,
+      subject: m.subject || '',
+      serviceCategory: m.service_category || '',
+      message: m.message,
+      read: Boolean(m.read),
+      createdAt: m.created_at ? new Date(m.created_at).toISOString() : new Date().toISOString()
+    }));
+
+    cachedDb = {
+      ...sections,
+      messages,
+      auth
+    };
+
+    // Keep local backup in sync
+    saveLocalDbFile(cachedDb);
+    isPostgresConnected = true;
+    console.log("Successfully connected to Neon PostgreSQL and synchronized portfolio data.");
+    return cachedDb;
+  } catch (err) {
+    console.error("Failed to initialize Neon PostgreSQL database:", err.message);
+    console.warn("Falling back to local JSON store.");
+    cachedDb = readLocalDbFile();
+    return cachedDb;
+  }
+}
+
+// ----------------------------------------------------
+// READ AND SAVE EXPORTS
+// ----------------------------------------------------
+
+export function isConnected() {
+  return isPostgresConnected;
+}
+
+// Read database (returns in-memory cache, falls back to local file)
+export function readDb() {
+  if (!cachedDb) {
+    cachedDb = readLocalDbFile();
+  }
+  return cachedDb;
+}
+
+// Save database with atomic update to cache, local file, and Neon PostgreSQL
+export function saveDb(data) {
+  cachedDb = data;
+  saveLocalDbFile(data);
+
+  // Asynchronously sync to Neon DB
+  if (pool && isPostgresConnected) {
+    syncDbToPostgres(data).catch(err => {
+      console.error("Error syncing database changes to Neon PostgreSQL:", err.message);
+    });
+  }
+
+  return true;
+}
+
+// Async save that awaits Neon PostgreSQL sync
+export async function saveDbAsync(data) {
+  cachedDb = data;
+  saveLocalDbFile(data);
+
+  if (pool) {
+    try {
+      await syncDbToPostgres(data);
+    } catch (err) {
+      console.error("Error in saveDbAsync syncing to Neon PostgreSQL:", err.message);
+    }
+  }
+
+  return true;
+}
+
+// Synchronize entire DB object to Neon PostgreSQL tables
+export async function syncDbToPostgres(data) {
+  if (!pool) return;
+
+  // 1. Sync admin credentials
+  if (data.auth) {
+    await pool.query(`
+      INSERT INTO admins (username, password_hash, token_secret, last_login)
+      VALUES ($1, $2, $3, $4)
+      ON CONFLICT (username) DO UPDATE
+      SET password_hash = EXCLUDED.password_hash,
+          token_secret = EXCLUDED.token_secret,
+          last_login = EXCLUDED.last_login,
+          updated_at = NOW();
+    `, [
+      data.auth.username || 'admin',
+      data.auth.passwordHash,
+      data.auth.tokenSecret,
+      data.auth.lastLogin ? new Date(data.auth.lastLogin) : null
+    ]);
+  }
+
+  // 2. Sync sections
+  const sections = ['profile', 'socials', 'services', 'skills', 'projects', 'experience', 'education', 'caseStudy', 'settings'];
+  for (const sec of sections) {
+    if (data[sec] !== undefined) {
+      await pool.query(`
+        INSERT INTO portfolio_data (section, data, updated_at)
+        VALUES ($1, $2, NOW())
+        ON CONFLICT (section) DO UPDATE
+        SET data = EXCLUDED.data,
+            updated_at = NOW();
+      `, [sec, JSON.stringify(data[sec])]);
+    }
+  }
+
+  // 3. Sync messages
+  if (Array.isArray(data.messages)) {
+    // Delete messages removed locally
+    const currentIds = data.messages.map(m => m.id);
+    if (currentIds.length > 0) {
+      await pool.query(`DELETE FROM messages WHERE NOT (id = ANY($1))`, [currentIds]);
+    } else {
+      await pool.query(`DELETE FROM messages`);
+    }
+
+    for (const msg of data.messages) {
+      await pool.query(`
+        INSERT INTO messages (id, name, email, subject, service_category, message, read, created_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        ON CONFLICT (id) DO UPDATE
+        SET read = EXCLUDED.read,
+            name = EXCLUDED.name,
+            email = EXCLUDED.email,
+            subject = EXCLUDED.subject,
+            service_category = EXCLUDED.service_category,
+            message = EXCLUDED.message;
+      `, [
+        msg.id,
+        msg.name,
+        msg.email,
+        msg.subject || '',
+        msg.serviceCategory || '',
+        msg.message,
+        Boolean(msg.read),
+        msg.createdAt ? new Date(msg.createdAt) : new Date()
+      ]);
+    }
+  }
+}
+
+// ----------------------------------------------------
+// SPECIALIZED DB ACTIONS (FOR DIRECT QUERYING)
+// ----------------------------------------------------
+
+export async function getAdminByUsername(username) {
+  if (pool && isPostgresConnected) {
+    try {
+      const res = await pool.query('SELECT * FROM admins WHERE LOWER(username) = LOWER($1) LIMIT 1', [username]);
+      if (res.rows.length > 0) {
+        const row = res.rows[0];
+        return {
+          id: row.id,
+          username: row.username,
+          passwordHash: row.password_hash,
+          tokenSecret: row.token_secret,
+          lastLogin: row.last_login ? row.last_login.toISOString() : null
+        };
+      }
+    } catch (e) {
+      console.error("Error fetching admin from Neon DB:", e.message);
+    }
+  }
+  const db = readDb();
+  if (db.auth && db.auth.username.toLowerCase() === username.toLowerCase()) {
+    return db.auth;
+  }
+  return null;
+}
+
+export async function updateAdminLogin(username) {
+  const now = new Date();
+  if (pool && isPostgresConnected) {
+    try {
+      await pool.query('UPDATE admins SET last_login = $1, updated_at = NOW() WHERE LOWER(username) = LOWER($2)', [now, username]);
+    } catch (e) {
+      console.error("Error updating admin last login in Neon DB:", e.message);
+    }
+  }
+  const db = readDb();
+  if (db.auth) {
+    db.auth.lastLogin = now.toISOString();
+    saveLocalDbFile(db);
+  }
+}
+
+export async function updateAdminCredentials(currentUsername, newUsername, newPasswordHash) {
+  const targetUsername = newUsername || currentUsername;
+  if (pool && isPostgresConnected) {
+    try {
+      await pool.query(`
+        UPDATE admins 
+        SET username = $1,
+            password_hash = COALESCE($2, password_hash),
+            updated_at = NOW()
+        WHERE LOWER(username) = LOWER($3)
+      `, [targetUsername, newPasswordHash || null, currentUsername]);
+    } catch (e) {
+      console.error("Error updating credentials in Neon DB:", e.message);
+    }
+  }
+  const db = readDb();
+  if (db.auth) {
+    if (newUsername) db.auth.username = newUsername;
+    if (newPasswordHash) db.auth.passwordHash = newPasswordHash;
+    saveLocalDbFile(db);
+  }
+}
+
+export async function insertMessage(msg) {
+  if (pool && isPostgresConnected) {
+    try {
+      await pool.query(`
+        INSERT INTO messages (id, name, email, subject, service_category, message, read, created_at)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      `, [
+        msg.id,
+        msg.name,
+        msg.email,
+        msg.subject || '',
+        msg.serviceCategory || '',
+        msg.message,
+        Boolean(msg.read),
+        msg.createdAt ? new Date(msg.createdAt) : new Date()
+      ]);
+    } catch (e) {
+      console.error("Error inserting message into Neon DB:", e.message);
+    }
+  }
+  const db = readDb();
+  db.messages = [msg, ...(db.messages || [])];
+  saveLocalDbFile(db);
 }

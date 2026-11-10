@@ -33,6 +33,7 @@ export default function AdminDashboard() {
     adminUser,
     adminData,
     stats,
+    databaseStatus,
     isLoading,
     logout,
     changeCredentials,
@@ -128,7 +129,7 @@ export default function AdminDashboard() {
         <div className="space-y-6">
           
           {/* Logo & User info */}
-          <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+          <div className="pb-4 border-b border-slate-800 space-y-2.5">
             <div className="flex items-center gap-2.5">
               <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center text-white font-black">
                 A
@@ -137,6 +138,10 @@ export default function AdminDashboard() {
                 <h2 className="text-sm font-black text-white leading-tight">Admin Console</h2>
                 <span className="text-[11px] text-slate-400">@{adminUser?.username || 'admin'}</span>
               </div>
+            </div>
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[10px] font-semibold text-emerald-400">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span>{databaseStatus || 'Neon PostgreSQL'}</span>
             </div>
           </div>
 

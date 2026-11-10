@@ -7,6 +7,7 @@ export function AdminProvider({ children }) {
   const [adminUser, setAdminUser] = useState(null);
   const [adminData, setAdminData] = useState(null);
   const [stats, setStats] = useState(null);
+  const [databaseStatus, setDatabaseStatus] = useState('Checking...');
   const [isLoading, setIsLoading] = useState(false);
   const [authError, setAuthError] = useState(null);
 
@@ -44,6 +45,9 @@ export function AdminProvider({ children }) {
       if (data.success) {
         setAdminData(data.data);
         setStats(data.stats);
+        if (data.database) {
+          setDatabaseStatus(data.database);
+        }
       }
     } catch (err) {
       console.error("Error fetching admin data:", err);
@@ -368,6 +372,7 @@ export function AdminProvider({ children }) {
         adminUser,
         adminData,
         stats,
+        databaseStatus,
         isLoading,
         authError,
         login,

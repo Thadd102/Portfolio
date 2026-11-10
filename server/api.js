@@ -3,7 +3,17 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
-import { readDb, saveDb, verifyPassword, hashPassword } from './db.js';
+import { 
+  readDb, 
+  saveDb, 
+  verifyPassword, 
+  hashPassword, 
+  getAdminByUsername, 
+  updateAdminLogin, 
+  updateAdminCredentials, 
+  insertMessage, 
+  isConnected 
+} from './db.js';
 import { createToken, authMiddleware } from './auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -59,13 +69,12 @@ router.get('/public/data', (req, res) => {
 });
 
 // Submit contact message from visitor
-router.post('/messages', (req, res) => {
+router.post('/messages', async (req, res) => {
   const { name, email, subject, serviceCategory, message } = req.body;
   if (!name || !email || !message) {
     return res.status(400).json({ error: 'Name, email, and message are required.' });
   }
 
-  const db = readDb();
   const newMessage = {
     id: `msg-${Date.now()}-${Math.round(Math.random() * 1000)}`,
     name: name.trim(),
@@ -77,8 +86,7 @@ router.post('/messages', (req, res) => {
     read: false
   };
 
-  db.messages = [newMessage, ...(db.messages || [])];
-  saveDb(db);
+  await insertMessage(newMessage);
 
   res.status(201).json({
     success: true,
@@ -91,70 +99,72 @@ router.post('/messages', (req, res) => {
 // AUTHENTICATION ENDPOINTS
 // ----------------------------------------------------
 
-router.post('/auth/login', (req, res) => {
+router.post('/auth/login', async (req, res) => {
   const { username, password } = req.body;
   if (!password) {
     return res.status(400).json({ error: 'Password is required' });
   }
 
-  const db = readDb();
-  if (username && db.auth.username.toLowerCase() !== username.trim().toLowerCase()) {
+  const requestedUsername = (username && username.trim()) || 'admin';
+  const admin = await getAdminByUsername(requestedUsername);
+
+  if (!admin) {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
 
-  if (!verifyPassword(password, db.auth.passwordHash)) {
+  if (!verifyPassword(password, admin.passwordHash)) {
     return res.status(401).json({ error: 'Incorrect password' });
   }
 
-  db.auth.lastLogin = new Date().toISOString();
-  saveDb(db);
+  await updateAdminLogin(admin.username);
 
-  const token = createToken(db.auth.username || 'admin');
+  const token = createToken(admin.username);
   res.json({
     success: true,
     token,
     user: {
-      username: db.auth.username || 'admin',
-      lastLogin: db.auth.lastLogin
+      username: admin.username,
+      lastLogin: new Date().toISOString()
     }
   });
 });
 
-router.get('/auth/me', authMiddleware, (req, res) => {
-  const db = readDb();
+router.get('/auth/me', authMiddleware, async (req, res) => {
+  const username = req.user?.username || 'admin';
+  const admin = await getAdminByUsername(username);
+
   res.json({
     authenticated: true,
     user: {
-      username: db.auth.username,
-      lastLogin: db.auth.lastLogin
+      username: admin?.username || username,
+      lastLogin: admin?.lastLogin || null
     }
   });
 });
 
-router.post('/auth/change-credentials', authMiddleware, (req, res) => {
+router.post('/auth/change-credentials', authMiddleware, async (req, res) => {
   const { currentPassword, newUsername, newPassword } = req.body;
-  const db = readDb();
+  const currentAdmin = await getAdminByUsername(req.user.username);
 
-  if (!verifyPassword(currentPassword, db.auth.passwordHash)) {
+  if (!currentAdmin || !verifyPassword(currentPassword, currentAdmin.passwordHash)) {
     return res.status(400).json({ error: 'Current password is incorrect' });
   }
 
-  if (newUsername && newUsername.trim()) {
-    db.auth.username = newUsername.trim();
-  }
-
+  let updatedPasswordHash = null;
   if (newPassword && newPassword.length >= 6) {
-    db.auth.passwordHash = hashPassword(newPassword);
+    updatedPasswordHash = hashPassword(newPassword);
   }
 
-  saveDb(db);
-  const newToken = createToken(db.auth.username);
+  const targetUsername = (newUsername && newUsername.trim()) || req.user.username;
+  await updateAdminCredentials(req.user.username, targetUsername, updatedPasswordHash);
+
+  const newToken = createToken(targetUsername);
 
   res.json({
     success: true,
     message: 'Credentials updated successfully',
     token: newToken,
-    user: { username: db.auth.username }
+    user: { username: targetUsername }
   });
 });
 
@@ -168,6 +178,7 @@ router.get('/admin/all', authMiddleware, (req, res) => {
   const { auth, ...adminData } = db;
   res.json({
     success: true,
+    database: isConnected() ? 'Neon PostgreSQL' : 'Local JSON',
     data: adminData,
     stats: {
       totalProjects: db.projects?.length || 0,

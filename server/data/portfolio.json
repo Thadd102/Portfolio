@@ -1,17 +1,10 @@
 {
   "profile": {
-    "name": "THADD 101",
-    "greeting": "Hi! I'm",
-    "title": "Full-Stack Web Developer & UI/UX Specialist",
-    "subtitle": "Web, SaaS & Application Engineer | Modern Creative UI/UX Specialist",
-    "badgeText": "Available for work",
-    "heroBullets": [
-      "Crafting high-impact UI/UX designs & visual brand identities.",
-      "Building fast, scalable full-stack web applications.",
-      "Engineering responsive modern web platforms & SaaS solutions."
-    ],
     "bio1": "I am a Full-Stack Web Developer & UI/UX Specialist driven by a passion for building fast, scalable, and intuitive digital experiences. Specializing in end-to-end development, I combine pixel-perfect visual design with robust software architecture to turn complex ideas into seamless web products.",
     "bio2": "My stack spans modern web technologies including React, Next.js, TypeScript, Tailwind CSS, Node.js, Supabase, and PostgreSQL. Whether engineering custom SaaS dashboards, full-stack web platforms, or interactive web tools, I build digital experiences that deliver real-world performance and aesthetic excellence.",
+    "name": "THADD 101",
+    "email": "thadd101.dev@gmail.com",
+    "phone": "+1 (234) 567-8900",
     "stats": [
       {
         "label": "Years Experience",
@@ -30,11 +23,18 @@
         "value": "100%"
       }
     ],
-    "avatarUrl": "/assets/profile.png",
-    "email": "thadd101.dev@gmail.com",
-    "phone": "+1 (234) 567-8900",
+    "title": "Full-Stack Web Developer & UI/UX Specialist",
+    "greeting": "Hi! I'm",
     "location": "Remote / Worldwide",
+    "subtitle": "Web, SaaS & Application Engineer | Modern Creative UI/UX Specialist",
+    "avatarUrl": "/assets/profile.png",
+    "badgeText": "Available for work",
     "resumeUrl": "/resume",
+    "heroBullets": [
+      "Crafting high-impact UI/UX designs & visual brand identities.",
+      "Building fast, scalable full-stack web applications.",
+      "Engineering responsive modern web platforms & SaaS solutions."
+    ],
     "tickerKeywords": [
       "WEB DEVELOPMENT",
       "ATTRACTIVE UI/UX",
@@ -50,53 +50,51 @@
   "socials": [
     {
       "id": "soc-1",
-      "platform": "GitHub",
       "url": "https://github.com",
       "icon": "github",
-      "isActive": true
+      "isActive": true,
+      "platform": "GitHub"
     },
     {
       "id": "soc-2",
-      "platform": "LinkedIn",
       "url": "https://linkedin.com",
       "icon": "linkedin",
-      "isActive": true
+      "isActive": true,
+      "platform": "LinkedIn"
     },
     {
       "id": "soc-3",
-      "platform": "Twitter/X",
       "url": "https://x.com",
       "icon": "twitter",
-      "isActive": true
+      "isActive": true,
+      "platform": "Twitter/X"
     },
     {
       "id": "soc-4",
-      "platform": "WhatsApp",
       "url": "https://wa.me/1234567890",
       "icon": "whatsapp",
-      "isActive": true
+      "isActive": true,
+      "platform": "WhatsApp"
     },
     {
       "id": "soc-5",
-      "platform": "Instagram",
       "url": "https://instagram.com",
       "icon": "instagram",
-      "isActive": true
+      "isActive": true,
+      "platform": "Instagram"
     },
     {
       "id": "soc-6",
-      "platform": "Facebook",
       "url": "https://facebook.com",
       "icon": "facebook",
-      "isActive": true
+      "isActive": true,
+      "platform": "Facebook"
     }
   ],
   "services": [
     {
       "id": "srv-1",
-      "number": "01",
-      "title": "ATTRACTIVE UI/UX DESIGN & PROTOTYPING",
-      "description": "Crafting distinctive, modern UI/UX design systems, interactive web mockups, wireframes, and design architectures tailored to captivate audiences and maximize conversion.",
+      "icon": "Palette",
       "tags": [
         "Figma",
         "UI/UX Design",
@@ -104,20 +102,20 @@
         "Design Systems",
         "Prototyping"
       ],
-      "icon": "Palette",
       "color": "pink",
       "theme": {
-        "leftBorder": "border-l-pink-500",
-        "iconBg": "bg-pink-500",
         "text": "text-pink-600 dark:text-pink-400",
-        "badgeBg": "bg-pink-50 text-pink-600 dark:bg-pink-950/50 dark:text-pink-400"
-      }
+        "iconBg": "bg-pink-500",
+        "badgeBg": "bg-pink-50 text-pink-600 dark:bg-pink-950/50 dark:text-pink-400",
+        "leftBorder": "border-l-pink-500"
+      },
+      "title": "ATTRACTIVE UI/UX DESIGN & PROTOTYPING",
+      "number": "01",
+      "description": "Crafting distinctive, modern UI/UX design systems, interactive web mockups, wireframes, and design architectures tailored to captivate audiences and maximize conversion."
     },
     {
       "id": "srv-2",
-      "number": "02",
-      "title": "FULL STACK WEB DEVELOPMENT",
-      "description": "Building fast, SEO-optimized, and ultra-responsive web applications with cutting-edge architectures, fluid micro-interactions, and pixel-perfect responsiveness across all screen sizes.",
+      "icon": "Monitor",
       "tags": [
         "React 19",
         "Next.js",
@@ -125,20 +123,20 @@
         "TypeScript",
         "JavaScript"
       ],
-      "icon": "Monitor",
       "color": "blue",
       "theme": {
-        "leftBorder": "border-l-blue-500",
-        "iconBg": "bg-blue-500",
         "text": "text-blue-600 dark:text-blue-400",
-        "badgeBg": "bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400"
-      }
+        "iconBg": "bg-blue-500",
+        "badgeBg": "bg-blue-50 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400",
+        "leftBorder": "border-l-blue-500"
+      },
+      "title": "FULL STACK WEB DEVELOPMENT",
+      "number": "02",
+      "description": "Building fast, SEO-optimized, and ultra-responsive web applications with cutting-edge architectures, fluid micro-interactions, and pixel-perfect responsiveness across all screen sizes."
     },
     {
       "id": "srv-3",
-      "number": "03",
-      "title": "SAAS & INTERACTIVE WEB APPS",
-      "description": "Engineering rich web applications, SaaS analytics dashboards, interactive tools, and data visualizations with live telemetry, state management, and real-time collaboration.",
+      "icon": "Layers",
       "tags": [
         "SaaS Architecture",
         "Interactive Web",
@@ -146,20 +144,20 @@
         "State Management",
         "REST APIs"
       ],
-      "icon": "Layers",
       "color": "emerald",
       "theme": {
-        "leftBorder": "border-l-emerald-500",
-        "iconBg": "bg-emerald-500",
         "text": "text-emerald-600 dark:text-emerald-400",
-        "badgeBg": "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400"
-      }
+        "iconBg": "bg-emerald-500",
+        "badgeBg": "bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400",
+        "leftBorder": "border-l-emerald-500"
+      },
+      "title": "SAAS & INTERACTIVE WEB APPS",
+      "number": "03",
+      "description": "Engineering rich web applications, SaaS analytics dashboards, interactive tools, and data visualizations with live telemetry, state management, and real-time collaboration."
     },
     {
       "id": "srv-4",
-      "number": "04",
-      "title": "BACKEND & API ENGINEERING",
-      "description": "Creating powerful, scalable backends, database architectures, and secure REST/GraphQL APIs with robust authentication, role permissions, and cloud integration.",
+      "icon": "Server",
       "tags": [
         "Node.js",
         "Express",
@@ -167,110 +165,107 @@
         "Supabase",
         "SQL"
       ],
-      "icon": "Server",
       "color": "purple",
       "theme": {
-        "leftBorder": "border-l-purple-500",
-        "iconBg": "bg-purple-500",
         "text": "text-purple-600 dark:text-purple-400",
-        "badgeBg": "bg-purple-50 text-purple-600 dark:bg-purple-950/50 dark:text-purple-400"
-      }
+        "iconBg": "bg-purple-500",
+        "badgeBg": "bg-purple-50 text-purple-600 dark:bg-purple-950/50 dark:text-purple-400",
+        "leftBorder": "border-l-purple-500"
+      },
+      "title": "BACKEND & API ENGINEERING",
+      "number": "04",
+      "description": "Creating powerful, scalable backends, database architectures, and secure REST/GraphQL APIs with robust authentication, role permissions, and cloud integration."
     }
   ],
   "skills": [
     {
       "id": "sk-1",
+      "icon": "Palette",
       "name": "Modern UI/UX & Figma",
-      "category": "UI/UX & Design",
       "level": 96,
-      "icon": "Palette"
+      "category": "UI/UX & Design"
     },
     {
       "id": "sk-2",
+      "icon": "Sparkles",
       "name": "Design Systems & Tokens",
-      "category": "UI/UX & Design",
       "level": 92,
-      "icon": "Sparkles"
+      "category": "UI/UX & Design"
     },
     {
       "id": "sk-3",
+      "icon": "Layout",
       "name": "Responsive Layouts & Motion",
-      "category": "UI/UX & Design",
       "level": 95,
-      "icon": "Layout"
+      "category": "UI/UX & Design"
     },
     {
       "id": "sk-4",
+      "icon": "Monitor",
       "name": "React 19 & Next.js",
-      "category": "Web Development",
       "level": 98,
-      "icon": "Monitor"
+      "category": "Web Development"
     },
     {
       "id": "sk-5",
+      "icon": "Layout",
       "name": "Tailwind CSS & Modern CSS",
-      "category": "Web Development",
       "level": 98,
-      "icon": "Layout"
+      "category": "Web Development"
     },
     {
       "id": "sk-6",
+      "icon": "Code",
       "name": "TypeScript & JavaScript",
-      "category": "Web Development",
       "level": 94,
-      "icon": "Code"
+      "category": "Web Development"
     },
     {
       "id": "sk-7",
+      "icon": "Layers",
       "name": "State Management & Zustand",
-      "category": "Web Development",
       "level": 92,
-      "icon": "Layers"
+      "category": "Web Development"
     },
     {
       "id": "sk-8",
+      "icon": "Server",
       "name": "Node.js & Express API",
-      "category": "Backend & Database",
       "level": 92,
-      "icon": "Server"
+      "category": "Backend & Database"
     },
     {
       "id": "sk-9",
+      "icon": "Database",
       "name": "PostgreSQL & Supabase",
-      "category": "Backend & Database",
       "level": 90,
-      "icon": "Database"
+      "category": "Backend & Database"
     },
     {
       "id": "sk-10",
+      "icon": "Globe",
       "name": "REST APIs & WebSockets",
-      "category": "Backend & Database",
       "level": 92,
-      "icon": "Globe"
+      "category": "Backend & Database"
     },
     {
       "id": "sk-11",
+      "icon": "Cpu",
       "name": "Git, GitHub & CI/CD",
-      "category": "Tools & Architecture",
       "level": 94,
-      "icon": "Cpu"
+      "category": "Tools & Architecture"
     },
     {
       "id": "sk-12",
+      "icon": "Globe",
       "name": "Vite, Vercel & Cloud Deploy",
-      "category": "Tools & Architecture",
       "level": 92,
-      "icon": "Globe"
+      "category": "Tools & Architecture"
     }
   ],
   "projects": [
     {
       "id": "proj-1",
-      "title": "Pulse SaaS - Cloud Telemetry & Analytics Dashboard",
-      "category": "Web Development",
-      "subCategory": "SaaS & Dashboards",
-      "description": "Real-time telemetry dashboard featuring interactive metric trends, revenue area charts, live streaming graphs, and dark-mode glassmorphic cards.",
-      "image": "/assets/demo-dashboard.jpg",
       "tags": [
         "React 19",
         "Next.js",
@@ -278,17 +273,17 @@
         "Chart.js",
         "SaaS"
       ],
-      "featured": true,
+      "image": "/assets/demo-dashboard.jpg",
+      "title": "Pulse SaaS - Cloud Telemetry & Analytics Dashboard",
+      "details": "High-impact cloud analytics dashboard rendering real-time streaming time-series data, drag-and-drop metrics widgets, audit telemetry, and dark/light mode tokens.",
       "liveUrl": "https://ui.shadcn.com/examples/dashboard",
-      "details": "High-impact cloud analytics dashboard rendering real-time streaming time-series data, drag-and-drop metrics widgets, audit telemetry, and dark/light mode tokens."
+      "category": "Web Development",
+      "featured": true,
+      "description": "Real-time telemetry dashboard featuring interactive metric trends, revenue area charts, live streaming graphs, and dark-mode glassmorphic cards.",
+      "subCategory": "SaaS & Dashboards"
     },
     {
       "id": "proj-2",
-      "title": "Ray Studio - Gradient Code & Design Visualizer",
-      "category": "Web Development",
-      "subCategory": "Creative & Agency",
-      "description": "Interactive design visualizer with glowing multi-stop gradients, glassmorphism syntax cards, dark-mode canvas presets, and instant export.",
-      "image": "/assets/demo-ray.jpg",
       "tags": [
         "React",
         "CSS Gradients",
@@ -296,17 +291,17 @@
         "Glassmorphism",
         "TypeScript"
       ],
-      "featured": true,
+      "image": "/assets/demo-ray.jpg",
+      "title": "Ray Studio - Gradient Code & Design Visualizer",
+      "details": "Vibrant visual presentation tool built for modern developers and designers, featuring reactive gradient styling, glassmorphism themes, and live interactive canvas controls.",
       "liveUrl": "https://ray.so",
-      "details": "Vibrant visual presentation tool built for modern developers and designers, featuring reactive gradient styling, glassmorphism themes, and live interactive canvas controls."
+      "category": "Web Development",
+      "featured": true,
+      "description": "Interactive design visualizer with glowing multi-stop gradients, glassmorphism syntax cards, dark-mode canvas presets, and instant export.",
+      "subCategory": "Creative & Agency"
     },
     {
       "id": "proj-3",
-      "title": "Visual3D - Interactive 3D WebGL & Graphics Studio",
-      "category": "Web Development",
-      "subCategory": "Creative & Agency",
-      "description": "GPU-accelerated browser 3D graphics studio featuring shader simulations, dynamic volumetric lighting, orbit controls, and physics.",
-      "image": "/assets/demo-threejs.jpg",
       "tags": [
         "Three.js",
         "WebGL",
@@ -314,17 +309,17 @@
         "Shaders",
         "JavaScript"
       ],
-      "featured": true,
+      "image": "/assets/demo-threejs.jpg",
+      "title": "Visual3D - Interactive 3D WebGL & Graphics Studio",
+      "details": "Browser-based 3D graphics showcase leveraging WebGL, camera animations, bloom post-processing, and interactive procedural models running at 60 FPS.",
       "liveUrl": "https://threejs.org/examples/",
-      "details": "Browser-based 3D graphics showcase leveraging WebGL, camera animations, bloom post-processing, and interactive procedural models running at 60 FPS."
+      "category": "Web Development",
+      "featured": true,
+      "description": "GPU-accelerated browser 3D graphics studio featuring shader simulations, dynamic volumetric lighting, orbit controls, and physics.",
+      "subCategory": "Creative & Agency"
     },
     {
       "id": "proj-4",
-      "title": "NodeFlow - Visual Architecture & Node Graph Canvas",
-      "category": "Web Development",
-      "subCategory": "Interactive Web Apps",
-      "description": "Interactive workflow engine with draggable nodes, curved connecting bus wires, reactive data ports, and dynamic minimap telemetry.",
-      "image": "/assets/demo-reactflow.jpg",
       "tags": [
         "React Flow",
         "TypeScript",
@@ -332,17 +327,17 @@
         "State Engine",
         "Interactive UI"
       ],
-      "featured": true,
+      "image": "/assets/demo-reactflow.jpg",
+      "title": "NodeFlow - Visual Architecture & Node Graph Canvas",
+      "details": "Extensible node-graph web application used for designing distributed architectures, automated pipelines, and reactive state systems with live interaction.",
       "liveUrl": "https://reactflow.dev",
-      "details": "Extensible node-graph web application used for designing distributed architectures, automated pipelines, and reactive state systems with live interaction."
+      "category": "Web Development",
+      "featured": true,
+      "description": "Interactive workflow engine with draggable nodes, curved connecting bus wires, reactive data ports, and dynamic minimap telemetry.",
+      "subCategory": "Interactive Web Apps"
     },
     {
       "id": "proj-5",
-      "title": "Supabase Cloud - Modern Full-Stack Platform & Portal",
-      "category": "Web Development",
-      "subCategory": "Full-Stack Platforms",
-      "description": "Cloud backend portal with interactive database explorers, realtime websocket synchronization, neon emerald telemetry, and edge functions.",
-      "image": "/assets/demo-supabase.jpg",
       "tags": [
         "PostgreSQL",
         "Next.js",
@@ -350,17 +345,17 @@
         "Full-Stack",
         "Tailwind CSS"
       ],
-      "featured": false,
+      "image": "/assets/demo-supabase.jpg",
+      "title": "Supabase Cloud - Modern Full-Stack Platform & Portal",
+      "details": "Developer portal showcasing real-time Postgres management, auth systems, vector queries, and sleek dark-mode glassmorphic aesthetics.",
       "liveUrl": "https://supabase.com",
-      "details": "Developer portal showcasing real-time Postgres management, auth systems, vector queries, and sleek dark-mode glassmorphic aesthetics."
+      "category": "Web Development",
+      "featured": false,
+      "description": "Cloud backend portal with interactive database explorers, realtime websocket synchronization, neon emerald telemetry, and edge functions.",
+      "subCategory": "Full-Stack Platforms"
     },
     {
       "id": "proj-6",
-      "title": "ExcaliCanvas - Real-Time Collaborative Whiteboard",
-      "category": "Web Development",
-      "subCategory": "Interactive Web Apps",
-      "description": "Vector design canvas and UI wireframing platform featuring freehand sketching, geometric shape generation, and multi-user live collaboration.",
-      "image": "/assets/demo-excalidraw.jpg",
       "tags": [
         "React",
         "Canvas API",
@@ -368,31 +363,36 @@
         "PWA",
         "Wireframing"
       ],
-      "featured": false,
+      "image": "/assets/demo-excalidraw.jpg",
+      "title": "ExcaliCanvas - Real-Time Collaborative Whiteboard",
+      "details": "Interactive illustration and wireframing application supporting infinite pan/zoom canvas, real-time multi-user synchronization, and instant SVG/PNG exports.",
       "liveUrl": "https://excalidraw.com",
-      "details": "Interactive illustration and wireframing application supporting infinite pan/zoom canvas, real-time multi-user synchronization, and instant SVG/PNG exports."
+      "category": "Web Development",
+      "featured": false,
+      "description": "Vector design canvas and UI wireframing platform featuring freehand sketching, geometric shape generation, and multi-user live collaboration.",
+      "subCategory": "Interactive Web Apps"
     }
   ],
   "experience": [
     {
       "id": "exp-1",
       "title": "Lead Full Stack Web Developer",
-      "company": "Tech Innovations Global",
       "period": "2023 - Present",
+      "company": "Tech Innovations Global",
       "description": "Spearheading modern web application architecture and design systems. Engineered scalable React and Next.js applications serving tens of thousands of active users."
     },
     {
       "id": "exp-2",
       "title": "Senior Frontend & UI/UX Engineer",
-      "company": "Digital Core Agency",
       "period": "2022 - 2023",
+      "company": "Digital Core Agency",
       "description": "Engineered scalable client web applications using React, Node.js, and PostgreSQL. Reduced page load times by 45% and established robust UI/UX design standards."
     },
     {
       "id": "exp-3",
       "title": "Web Developer & UI Designer",
-      "company": "Pixel Craft Studio",
       "period": "2020 - 2022",
+      "company": "Pixel Craft Studio",
       "description": "Delivered cohesive brand identities, modern UI/UX design mockups in Figma, and developed dynamic responsive frontend interfaces for over 25 client launches."
     }
   ],
@@ -400,21 +400,19 @@
     {
       "id": "edu-1",
       "degree": "Bachelor of Science in Computer Science",
-      "institution": "State University of Technology",
       "period": "2020 - 2024",
-      "description": "Specialized in Software Engineering, Web Technologies, and Distributed Systems."
+      "description": "Specialized in Software Engineering, Web Technologies, and Distributed Systems.",
+      "institution": "State University of Technology"
     },
     {
       "id": "edu-2",
       "degree": "Professional Certificate in UI/UX & Modern Web Design",
-      "institution": "Interaction Design Institute",
       "period": "2021",
-      "description": "User experience research, design systems, modern web accessibility, and interactive prototyping."
+      "description": "User experience research, design systems, modern web accessibility, and interactive prototyping.",
+      "institution": "Interaction Design Institute"
     }
   ],
   "caseStudy": {
-    "title": "Real-time Multi-Tenant Web Collaboration Suite",
-    "description": "Engineered an end-to-end real-time communication web platform supporting live chat, audio/video rooms, role management, and instant notifications. Scaled to handle high-concurrency connections with sub-45ms latency across web clients.",
     "tags": [
       "Node.js",
       "Socket.io",
@@ -422,6 +420,7 @@
       "PostgreSQL",
       "WebRTC"
     ],
+    "title": "Real-time Multi-Tenant Web Collaboration Suite",
     "metrics": [
       {
         "label": "Latency",
@@ -436,7 +435,16 @@
         "value": "99.99%"
       }
     ],
-    "detailsUrl": "#contact"
+    "detailsUrl": "#contact",
+    "description": "Engineered an end-to-end real-time communication web platform supporting live chat, audio/video rooms, role management, and instant notifications. Scaled to handle high-concurrency connections with sub-45ms latency across web clients."
+  },
+  "settings": {
+    "siteTitle": "THADD 101 | Full-Stack Web Developer & UI/UX Specialist",
+    "accentColor": "#38bdf8",
+    "contactEmail": "thadd101.dev@gmail.com",
+    "footerCopyright": "© 2026 THADD 101. All rights reserved.",
+    "metaDescription": "Professional portfolio of THADD 101 - Full-Stack Web Developer crafting modern digital experiences with attractive UI/UX.",
+    "enableContactForm": true
   },
   "messages": [
     {
@@ -446,18 +454,10 @@
       "subject": "Full-Stack Web App Development Inquiry",
       "serviceCategory": "Web Development",
       "message": "Hi THADD, we were extremely impressed by your portfolio projects and live demos. We are launching a new startup and need a full-stack Next.js web application with attractive UI/UX. Would love to schedule an introductory call this week!",
-      "createdAt": "2026-10-10T17:08:18.209Z",
-      "read": false
+      "read": false,
+      "createdAt": "2026-10-10T17:08:18.209Z"
     }
   ],
-  "settings": {
-    "siteTitle": "THADD 101 | Full-Stack Web Developer & UI/UX Specialist",
-    "metaDescription": "Professional portfolio of THADD 101 - Full-Stack Web Developer crafting modern digital experiences with attractive UI/UX.",
-    "contactEmail": "thadd101.dev@gmail.com",
-    "enableContactForm": true,
-    "accentColor": "#38bdf8",
-    "footerCopyright": "© 2026 THADD 101. All rights reserved."
-  },
   "auth": {
     "username": "admin",
     "passwordHash": "2e8975831b268cdf95fd6fd4dd65b3ef:5df4bee4228136c9984566d0a822545956d6492e169a3e5d62097b33b76d8cc3db144b54ff332e57220b7423bcdae822058b5a2f17e113b9d2a3603121fdb756",
